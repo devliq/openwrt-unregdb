@@ -57,7 +57,7 @@ cp "$ROOT/keys/unregdb.pub" "$ROOT/keys/unregdb-apk.pem" "$ROOT/dist/keys/"
     keys/unregdb.pub keys/unregdb-apk.pem \
     opkg/Packages opkg/Packages.gz opkg/Packages.sig \
     "opkg/$(basename "$IPK")" \
-    apk/packages.adb apk/packages.adb.sig apk/index.json \
+    apk/packages.adb apk/index.json \
     "apk/$(basename "$APKFILE")" > SHA256SUMS )
 
 echo "feed built in $ROOT/dist"
