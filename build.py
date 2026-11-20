@@ -56,7 +56,9 @@ def build() -> bytes:
     n_countries = len(countries)
     n_rules = len(RULES)
 
-    rules_off = 8 + 4 * n_countries
+    # The kernel walks country entries until it sees coll_ptr == 0.
+    table_len = 4 * n_countries + 4
+    rules_off = 8 + table_len
     collection_off = rules_off + 16 * n_rules
     assert collection_off % 4 == 0
 
@@ -68,6 +70,7 @@ def build() -> bytes:
     for cc in countries:
         out += cc.encode("ascii")
         out += struct.pack(">H", collection_off >> 2)
+    out += b"\x00" * 4  # end of the country table (coll_ptr == 0)
 
     # Rules.
     for i, (start, end, max_bw, eirp, flags) in enumerate(RULES):
