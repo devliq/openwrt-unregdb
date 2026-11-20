@@ -56,23 +56,38 @@ To drop the feed again: remove the `src/gz unregdb` line, `opkg update`, then
 
 ### apk (OpenWrt 25.x / snapshots)
 
-apk trusts unsigned indexes over HTTPS (that is how the official feeds are
-published) and verifies each **package** signature with the key in
-`/etc/apk/keys`. Install the EC public key once:
+The `.apk` is signed with an EC P-256 key; install the public key once:
 
 ```sh
 wget -O /etc/apk/keys/unregdb.pem \
   https://raw.githubusercontent.com/devliq/openwrt-unregdb/main/dist/keys/unregdb-apk.pem
-mkdir -p /etc/apk/repositories.d
-echo "https://raw.githubusercontent.com/devliq/openwrt-unregdb/main/dist/apk/packages.adb" \
-  > /etc/apk/repositories.d/unregdb.list
-apk update
-apk add --upgrade wireless-regdb
+```
+
+**Recommended — install the signed package directly** (apk verifies the
+signature with that key):
+
+```sh
+wget -O /tmp/wr.apk \
+  https://raw.githubusercontent.com/devliq/openwrt-unregdb/main/dist/apk/wireless-regdb-9999.0001-r1.apk
+apk add /tmp/wr.apk
 reboot
 ```
 
-A `file://` or plain-HTTP repo is treated as untrusted by apk (even for the
-official index); use the HTTPS URL above.
+**Feed** — OpenWrt's apk does not accept the index signature from a
+third-party key (even with the key installed), so the index needs
+`--allow-untrusted`; the payload is still fetched over HTTPS:
+
+```sh
+mkdir -p /etc/apk/repositories.d
+echo "https://raw.githubusercontent.com/devliq/openwrt-unregdb/main/dist/apk/packages.adb" \
+  > /etc/apk/repositories.d/unregdb.list
+apk --allow-untrusted update
+apk --allow-untrusted add --upgrade wireless-regdb
+reboot
+```
+
+`file://` and plain-HTTP repos are rejected by apk even for the official
+index; use the HTTPS URL above.
 
 ### Single package (no feed)
 
