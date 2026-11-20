@@ -46,8 +46,6 @@ mkdir -p "$ROOT/dist/apk"
 # apk reject it unless every client trusts that key.
 "$APK" mkndx --root / --allow-untrusted \
     --output "$ROOT/dist/apk/packages.adb" "$APKFILE"
-"$USIGN" -S -s "$USIGN_KEY" -m "$ROOT/dist/apk/packages.adb" \
-    -x "$ROOT/dist/apk/packages.adb.sig"
 printf '{"version":2,"architecture":"%s","packages":{"%s":"%s"}}\n' \
     "$ARCH" "$PKGNAME" "$VERSION" > "$ROOT/dist/apk/index.json"
 
