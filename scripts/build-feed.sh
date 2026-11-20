@@ -46,6 +46,8 @@ mkdir -p "$ROOT/dist/apk"
 # apk reject it unless every client trusts that key.
 "$APK" mkndx --root / --allow-untrusted \
     --output "$ROOT/dist/apk/packages.adb" "$APKFILE"
+"$USIGN" -S -s "$USIGN_KEY" -m "$ROOT/dist/apk/packages.adb" \
+    -x "$ROOT/dist/apk/packages.adb.sig"
 printf '{"version":2,"architecture":"%s","packages":{"%s":"%s"}}\n' \
     "$ARCH" "$PKGNAME" "$VERSION" > "$ROOT/dist/apk/index.json"
 
@@ -57,7 +59,7 @@ cp "$ROOT/keys/unregdb.pub" "$ROOT/keys/unregdb-apk.pem" "$ROOT/dist/keys/"
     keys/unregdb.pub keys/unregdb-apk.pem \
     opkg/Packages opkg/Packages.gz opkg/Packages.sig \
     "opkg/$(basename "$IPK")" \
-    apk/packages.adb apk/index.json \
+    apk/packages.adb apk/packages.adb.sig apk/index.json \
     "apk/$(basename "$APKFILE")" > SHA256SUMS )
 
 echo "feed built in $ROOT/dist"
